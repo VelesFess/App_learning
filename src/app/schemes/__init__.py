@@ -1,0 +1,2 @@
+# pydantic работа с json
+
