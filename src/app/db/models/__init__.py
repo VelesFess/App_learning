@@ -1,2 +1,2 @@
-# SQLALCHEMY  (CLASSI MODELEI SISTEMI  only) 
-# alembic 
+# SQLALCHEMY  (CLASSI MODELEI SISTEMI  only)
+# alembic
