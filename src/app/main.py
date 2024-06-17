@@ -5,6 +5,8 @@ app = FastAPI()
 # from routers.router1 import router as router1
 # app.include_router(router1)
 # REST server почитать
+# middlewar
+# настроечные подключения
 # to do  connect swagger
 
 
