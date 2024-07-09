@@ -2,5 +2,9 @@ fastapi
 uvicorn
 black
 isort
-flack8
+flake8
 mypy
+sqlalchemy
+asyncpg
+alembic
+pydantic-settings

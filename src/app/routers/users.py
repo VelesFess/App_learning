@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from schemes.auth import TokenRequest, TokenResponse
 
 router = APIRouter()
 
@@ -16,3 +17,11 @@ async def read_user_me():
 @router.get("/users/{username}", tags=["users"])
 async def read_user(username: str):
     return {"username": username}
+
+
+@router.post("/auth", tags=["users"], response_model=TokenResponse)
+async def auth_user(
+    data: TokenRequest,
+    # user_repository: UserRepository = Depends(func_to_get_user_repository)
+):
+    return "jwt"
