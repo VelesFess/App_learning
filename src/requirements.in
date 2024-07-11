@@ -8,3 +8,6 @@ sqlalchemy
 asyncpg
 alembic
 pydantic-settings
+pytest
+pyjwt
+

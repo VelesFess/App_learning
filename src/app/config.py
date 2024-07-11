@@ -3,8 +3,8 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    pg_dsn: PostgresDsn = (
-        "postgresql+asyncpg://alan:wakeupalan@localhost:5432/wake"  # noqa: E501
+    pg_dsn: str = (
+        "postgresql+asyncpg://alan:wakeupalan@postgres:5432/wake"  # noqa: E501
     )
 
 

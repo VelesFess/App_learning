@@ -1,5 +1,5 @@
 from fastapi import APIRouter, FastAPI, HTTPException
-from schemes.item import Item as Item
+from schemas.item import Item as Item
 
 app = FastAPI()
 
