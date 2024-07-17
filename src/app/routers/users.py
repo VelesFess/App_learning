@@ -1,13 +1,14 @@
 import jwt
-from fastapi import APIRouter ,HTTPException, Header
-from pydantic import EmailStr , ValidationError
+from fastapi import APIRouter ,HTTPException, Depends
+from pydantic import ValidationError
 from schemas.user import CreateUser, UserPayload, JwtMessage
 from schemas.auth import TokenRequest, TokenResponse
 from typing import Annotated
 from jwt.exceptions import InvalidTokenError
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 router = APIRouter()
-
+auth_scheme = HTTPBearer()
 
 @router.get("/users/", tags=["users"])
 async def read_users():
@@ -32,20 +33,23 @@ async def auth_user(
     return "jwt"
 
 
-async def verify_key(user_data: Annotated[str, Header(alias='authorization')]):
+async def verify_key(token:  Annotated[HTTPAuthorizationCredentials, Depends(auth_scheme)]) -> UserPayload: 
     try:
-        user_payload=jwt.decode(user_data, "secret", algorithms=["HS256"])
+        user_payload=jwt.decode(token, "secret", algorithms=["HS256"])
     except InvalidTokenError:
-        raise HTTPException(status_code=400, detail="Unauthorized")
-    if  user_payload['authorization'] != True:
+        print('Error from 40str')
         raise HTTPException(status_code=401, detail="Unauthorized")
     try:
-        user_payload.model_validate({'authorization': 'True'})
-    except:
-        raise HTTPException(status_code=501, detail=ValidationError.errors) 
-    return user_payload
+        result=UserPayload(**user_payload) # распаковка объекта через kwargs 
+        # result=UserPayload(id=user_payload["id"],username=user_payload["username"],)
+    except ValidationError:
+        raise HTTPException(status_code=500, detail=ValidationError.errors) 
+    return result
 
 
-@router.post("/ping")
-async def pong(user_data: Annotated[str, verify_key]):
+@router.post("/ping", dependencies=[Depends(verify_key)])
+async def pong():
     return {"ping": "pong!"}
+
+# Глобольная депенденси()
+# зависимость для понга - get_user_from_token  Request:request -. request.Header.get('Authorisation')->token -> token.decode 
