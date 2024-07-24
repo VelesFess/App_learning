@@ -1,29 +1,31 @@
-import jwt
-from fastapi import APIRouter ,HTTPException, Depends
-from pydantic import ValidationError
-from schemas.user import  UserPayload , get_user_from_token
-from schemas.auth import TokenRequest, TokenResponse
 from typing import Annotated
-from jwt.exceptions import InvalidTokenError
+
+import jwt
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from jwt.exceptions import InvalidTokenError
+from pydantic import ValidationError
+from schemas.auth import TokenRequest, TokenResponse
+from schemas.user import UserPayload, get_user_from_token
 
 router = APIRouter()
 auth_scheme = HTTPBearer()
 
-async def verify_key(token:  Annotated[HTTPAuthorizationCredentials, Depends(auth_scheme)]) -> UserPayload: 
+
+async def verify_key(
+    token: Annotated[HTTPAuthorizationCredentials, Depends(auth_scheme)]
+) -> UserPayload:
     try:
-        user_payload=jwt.decode(token, "secret", algorithms=["HS256"])
+        user_payload = jwt.decode(token, "secret", algorithms=["HS256"])
     except InvalidTokenError:
-        print('Error from 40str')
+        print("Error from 40str")
         raise HTTPException(status_code=401, detail="Unauthorized")
     try:
-        result=UserPayload(**user_payload) # распаковка объекта через kwargs 
+        result = UserPayload(**user_payload)  # распаковка объекта через kwargs
         # result=UserPayload(id=user_payload["id"],username=user_payload["username"],)
     except ValidationError:
-        raise HTTPException(status_code=500, detail=ValidationError.errors) 
+        raise HTTPException(status_code=500, detail=ValidationError.errors)
     return result
-
-
 
 
 @router.get("/users/", tags=["users"])
@@ -51,8 +53,9 @@ async def auth_user(
 
 @router.post("/ping", dependencies=[Depends(get_user_from_token)])
 async def pong():
-
     return {"ping": "pong!"}
 
+
 # Глобольная депенденси()
-# зависимость для понга - get_user_from_token  Request:request -. request.Header.get('Authorisation')->token -> token.decode 
+# зависимость для понга - get_user_from_token  Request:request ->
+# request.Header.get('Authorisation')->token -> token.decode
