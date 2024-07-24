@@ -51,6 +51,7 @@ async def auth_user(
 
 @router.post("/ping", dependencies=[Depends(get_user_from_token)])
 async def pong():
+
     return {"ping": "pong!"}
 
 # Глобольная депенденси()
