@@ -2,7 +2,6 @@ import jwt
 from fastapi import APIRouter ,HTTPException, Depends
 from pydantic import ValidationError
 from schemas.user import  UserPayload , get_user_from_token
-
 from schemas.auth import TokenRequest, TokenResponse
 from typing import Annotated
 from jwt.exceptions import InvalidTokenError
@@ -50,7 +49,7 @@ async def auth_user(
     return "jwt"
 
 
-@router.post("/ping", dependencies=[Depends(verify_key)])
+@router.post("/ping", dependencies=[Depends(get_user_from_token)])
 async def pong():
     return {"ping": "pong!"}
 

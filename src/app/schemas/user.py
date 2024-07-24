@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from fastapi import  Depends , Request
+from fastapi import  Request, Header
 from typing import Annotated
 from fastapi.security import  HTTPBearer
 
@@ -40,6 +40,10 @@ class UserInDB(BaseModel):
     full_name: str | None = None
 
 
+# зависимость для понга - get_user_from_token  Request:request -. request.Header.get('Authorisation')->token -> token.decode 
+
 auth_scheme = HTTPBearer()
-async def get_user_from_token(token:  Annotated[Request, Depends(auth_scheme)]) -> UserOut: 
-    return 
+async def get_user_from_token(request:  Annotated[Request, Header()]) -> UserOut: 
+    token=request.Header.get('Authorisation')
+    token_return=UserOut(**token.decode)
+    return token_return
