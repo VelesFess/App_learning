@@ -10,4 +10,3 @@ alembic
 pydantic-settings
 pytest
 pyjwt
-
