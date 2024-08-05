@@ -1,5 +1,4 @@
 from typing import Annotated
-
 from fastapi import HTTPException, Request
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, EmailStr
@@ -47,8 +46,9 @@ class UserInDB(BaseModel):
 
 auth_scheme = HTTPBearer()
 
-
-async def get_user_from_token(request: Annotated[Request, auth_scheme]) -> UserOut:
+async def get_user_from_token(
+    request: Annotated[Request, auth_scheme]
+) -> UserOut:
     token = request.headers.get("Authorisation")
     if token is None:
         raise HTTPException(status_code=401, detail="Unauthorized")

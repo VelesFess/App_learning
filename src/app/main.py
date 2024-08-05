@@ -1,4 +1,4 @@
-from db.db import  async_session as  session_pg
+from db.db import  async_session as  session_pg , engine, Base
 from fastapi import FastAPI 
 from routers.router1 import router as router1
 from routers.users import router as router_users
@@ -15,11 +15,17 @@ You will be able to:
 * **Read users** (_not implemented_).
 * **Create event** (_not implemented_).
 """
+Base.metadata.create_all(bind=engine)
+
+def get_db():
+    db = session_pg()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 
-
-session_pg()
 app = FastAPI(
     title="Calendar",
     description=description,
