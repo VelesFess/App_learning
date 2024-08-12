@@ -1,7 +1,8 @@
-from db.db import  async_session as  session_pg , engine, Base
+from db.db import  async_session as  session_pg 
 from fastapi import FastAPI 
 from routers.router1 import router as router1
 from routers.users import router as router_users
+
 
 description = """
 Calendar API helps you with managing your shedule. 🚀
@@ -15,7 +16,7 @@ You will be able to:
 * **Read users** (_not implemented_).
 * **Create event** (_not implemented_).
 """
-Base.metadata.create_all(bind=engine)
+
 
 def get_db():
     db = session_pg()

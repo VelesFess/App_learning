@@ -1,5 +1,4 @@
 from typing import Annotated
-
 import jwt
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -7,6 +6,7 @@ from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from schemas.auth import TokenRequest, TokenResponse
 from schemas.user import UserPayload, get_user_from_token
+from db.repositories.users.user_repository import UserRepository
 
 router = APIRouter()
 auth_scheme = HTTPBearer()

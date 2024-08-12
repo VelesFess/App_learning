@@ -1,6 +1,8 @@
 from typing import Annotated
-
+from fastapi import HTTPException, Request
 from fastapi import Header, HTTPException
+from fastapi.security import HTTPBearer
+from schemas.user import UserOut
 
 
 async def get_token_header(x_token: Annotated[str, Header()]):
@@ -13,3 +15,17 @@ async def get_query_token(token: str):
         raise HTTPException(
             status_code=400, detail="No Jessica token provided"
         )  # noqa: E501
+    
+    # зависимость для понга - get_user_from_token  Request:request ->
+#  request.Header.get('Authorisation')->token -> token.decode
+
+auth_scheme = HTTPBearer()
+
+async def get_user_from_token(
+    request: Annotated[Request, auth_scheme]
+) -> UserOut:
+    token = request.headers.get("Authorisation")
+    if token is None:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    token_return = UserOut(**token.decode)
+    return token_return
