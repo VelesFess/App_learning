@@ -18,3 +18,5 @@ RUN set -eux \
 
 # copy project
 COPY . .
+
+CMD [ "./docker_entry_point.sh" ]

@@ -5,8 +5,12 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from schemas.auth import TokenRequest, TokenResponse
-from schemas.user import UserPayload, get_user_from_token
+from schemas.user import UserResponse, UserPayload, CreateUserPayload
 from db.repositories.users.user_repository import UserRepository
+from db.dto.users import CreateUserDto, UserDto
+from db.db import async_session
+from dependencies import get_user_from_token
+
 
 router = APIRouter()
 auth_scheme = HTTPBearer()
@@ -28,9 +32,39 @@ async def verify_key(
     return result
 
 
-@router.get("/users/", tags=["users"])
+@router.get("/users/", tags=["users"], response_model=list[UserResponse])
 async def read_users():
-    return [{"username": "Rick"}, {"username": "Morty"}]
+    async with async_session() as session:
+        users: list[UserDto] = await UserRepository.get_users(session)
+    return [
+        UserResponse(
+            login=user.login,
+            name=user.name,
+            email=user.email,
+            id=user.id
+        )
+        for user in users
+    ]
+
+
+@router.post("/users/", tags=["users"], response_model=UserResponse)
+async def create_user(create_user_payload: CreateUserPayload):
+    async with async_session() as session:
+        user: UserDto = await UserRepository.create_user(
+            session,
+            CreateUserDto(
+                login=create_user_payload.login,
+                name=create_user_payload.name,
+                email=create_user_payload.email,
+                password=create_user_payload.password
+            )
+        )
+    return UserResponse(
+        login=user.login,
+        name=user.name,
+        email=user.email,
+        id=user.id
+    )
 
 
 @router.get("/users/me", tags=["users"])
@@ -46,7 +80,6 @@ async def read_user(username: str):
 @router.post("/auth", tags=["users"], response_model=TokenResponse)
 async def auth_user(
     data: TokenRequest,
-    # user_repository: UserRepository = Depends(func_to_get_user_repository)
 ):
     return "jwt"
 

@@ -1,8 +1,9 @@
+import jwt
 from typing import Annotated
 from fastapi import HTTPException, Request
 from fastapi import Header, HTTPException
 from fastapi.security import HTTPBearer
-from schemas.user import UserOut
+from schemas.user import UserPayload
 
 
 async def get_token_header(x_token: Annotated[str, Header()]):
@@ -23,9 +24,10 @@ auth_scheme = HTTPBearer()
 
 async def get_user_from_token(
     request: Annotated[Request, auth_scheme]
-) -> UserOut:
-    token = request.headers.get("Authorisation")
-    if token is None:
+) -> UserPayload:
+    auth_header_value = request.headers.get("Authorization")
+    if auth_header_value is None:
         raise HTTPException(status_code=401, detail="Unauthorized")
-    token_return = UserOut(**token.decode)
+    _, token_data = auth_header_value.split()
+    token_return = UserPayload(**jwt.decode(token_data))
     return token_return
