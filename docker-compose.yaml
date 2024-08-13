@@ -4,7 +4,9 @@ services:
     build: ./src
     command: bash -c './docker_entry_point.sh'
     environment:
-      pg_dsn: 'postgresql+asyncpg://alan:wakeupalan@postgres:15432/wake2'
+      pg_dsn: 'postgresql+asyncpg://alan:wakeupalan@postgres:5432/wake2'
+    depends_on:
+      - postgres
     volumes:
       - ./src/:/usr/src/
     ports:
@@ -17,4 +19,4 @@ services:
       POSTGRES_USER: "alan"
       POSTGRES_PASSWORD: "wakeupalan"
     ports: #port forwarding
-      - "15432:5432"
+      - "5432:5432"
