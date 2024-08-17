@@ -12,4 +12,5 @@ class CreateUserDto(BaseUserDto):
 
 
 class UserDto(BaseUserDto):
+    password: str
     id: int
