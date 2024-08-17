@@ -30,5 +30,5 @@ async def get_user_from_token(
     if auth_header_value is None:
         raise HTTPException(status_code=401, detail="Unauthorized")
     _, token_data = auth_header_value.split()
-    token_return = UserPayload(**jwt.decode(token_data, secret=settings.auth_secret))
+    token_return = UserPayload(**jwt.decode(token_data, settings.auth_secret, algorithms="HS256"))
     return token_return
