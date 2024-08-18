@@ -54,3 +54,15 @@ async def read_user(username: str):
 @router.post("/ping")
 async def pong(user: UserPayload = Depends(get_user_from_token)):
     return {"ping": f"pong, {user.login}!"}
+
+
+@router.post("/users/me")
+async def get_me_as_user(user: UserPayload = Depends(get_user_from_token)):
+    return UserRepository.get_user_by_login(async_session, UserPayload.login)
+
+
+@router.post("/users/{username}")
+async def get_other_user(
+    username: str, user: UserPayload = Depends(get_user_from_token)
+):
+    return UserRepository.get_user_by_username(async_session, username)
