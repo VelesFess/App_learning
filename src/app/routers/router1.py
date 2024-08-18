@@ -18,14 +18,6 @@ async def root():
     return {"Alan": "Wake"}
 
 
-# @router.get("/Wake")
-# def get_item(item_id: int):
-#     app.mount(
-# "/Wake", StaticFiles(
-# directory="/home/konstantin/Programming/FastAPI/src/app/templates",
-# html = True),
-#  name="Alan")
-#     return
 
 
 @router.get("/items/{item_id}", response_model=Item)

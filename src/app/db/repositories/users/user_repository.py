@@ -1,17 +1,12 @@
-# Мы пиешм асинхронный коннектор к БД, тебе нужна асинхронная сессия
-# from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.sql.elements import BooleanClauseList
-
-# Импорты всегда только абсолютные!!!
-# from ....db.models.users import User , UserCreate
 from db.models.users import User
 from db.repositories.exceptions import NoRowsFoundError
 from db.dto.users import CreateUserDto, UserDto
 
 
-class UserRepository:  # check login & password
+class UserRepository:  
     @classmethod
     def db_model_to_dto(cls, db_user: User) -> UserDto:
         return UserDto(

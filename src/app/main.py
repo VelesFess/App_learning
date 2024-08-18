@@ -37,6 +37,3 @@ app = FastAPI(
 app.include_router(router1, tags=['Items'])
 app.include_router(router_users)
 app.include_router(auth_router)
-
-
-# настроечные подключения

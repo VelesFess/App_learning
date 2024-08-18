@@ -65,8 +65,3 @@ async def pong(
     user: UserPayload = Depends(get_user_from_token)
 ):
     return {"ping": f"pong, {user.login}!"}
-
-
-# Глобольная депенденси()
-# зависимость для понга - get_user_from_token  Request:request ->
-# request.Header.get('Authorisation')->token -> token.decode
