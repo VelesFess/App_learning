@@ -41,27 +41,17 @@ async def create_user(create_user_payload: CreateUserPayload):
     )
 
 
-@router.get("/users/me", tags=["users"])
-async def read_user_me():
-    return {"username": "fakecurrentuser"}
-
-
-@router.get("/users/{username}", tags=["users"])
-async def read_user(username: str):
-    return {"username": username}
-
-
 @router.post("/ping")
 async def pong(user: UserPayload = Depends(get_user_from_token)):
     return {"ping": f"pong, {user.login}!"}
 
 
-@router.post("/users/me")
+@router.get("/users/me", tags=["users"])
 async def get_me_as_user(user: UserPayload = Depends(get_user_from_token)):
     return UserRepository.get_user_by_login(async_session, UserPayload.login)
 
 
-@router.post("/users/{username}")
+@router.get("/users/{username}", tags=["users"])
 async def get_other_user(
     username: str, user: UserPayload = Depends(get_user_from_token)
 ):
