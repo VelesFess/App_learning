@@ -18,6 +18,7 @@ class UserRepository:  # check login & password
             login=db_user.login,
             name=db_user.name,
             email=db_user.email,
+            password=db_user.password,
             id=db_user.id
         )
 
@@ -34,9 +35,17 @@ class UserRepository:  # check login & password
     @classmethod
     async def get_user_by_email(cls, db: AsyncSession, email: str) -> UserDto: # check user in db by email
         # return await db.query(User).filter(User.email == email).first()
-        user_list = await cls.get_users(filters=User.email == email, limit=1)
+        user_list = await cls.get_users(db, filters=User.email == email, limit=1)
         if len(user_list) == 0:
             raise NoRowsFoundError(f"User with {email=} not found")
+        return user_list[0]
+
+    @classmethod
+    async def get_user_by_login(cls, db: AsyncSession, login: str) -> UserDto:
+        # check user in db by login
+        user_list = await cls.get_users(db, filters=User.login == login, limit=1)
+        if len(user_list) == 0:
+            raise NoRowsFoundError(f"User with {login=} not found")
         return user_list[0]
 
     @classmethod
@@ -57,8 +66,7 @@ class UserRepository:  # check login & password
 
     @classmethod
     async def create_user(cls, db: AsyncSession, user: CreateUserDto) -> UserDto:
-        fake_hashed_password = user.password + "notreallyhashed"
-        db_user = User(login=user.login, name=user.name, email=user.email, password=fake_hashed_password)
+        db_user = User(login=user.login, name=user.name, email=user.email, password=user.password)
         db.add(db_user)
         await db.commit()
         await db.refresh(db_user)

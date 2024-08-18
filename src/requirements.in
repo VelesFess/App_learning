@@ -10,3 +10,4 @@ alembic
 pydantic-settings
 pytest
 pyjwt
+py-bcrypt
