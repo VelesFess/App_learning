@@ -18,8 +18,6 @@ async def root():
     return {"Alan": "Wake"}
 
 
-
-
 @router.get("/items/{item_id}", response_model=Item)
 async def read_item(item_id: int):
     if item_id < 0 or item_id >= len(items):

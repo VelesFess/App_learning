@@ -9,12 +9,11 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-sys.path.append(
-    str(Path(__file__).parent.parent.parent.absolute())
-)
+sys.path.append(str(Path(__file__).parent.parent.parent.absolute()))
 
 from db.db import Base
 from config import settings
+
 # Здесь и далее следует импортировать все модели для того, чтобы alembic их отслеживал
 from db.models.users import *
 

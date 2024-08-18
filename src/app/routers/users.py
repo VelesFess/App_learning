@@ -1,16 +1,13 @@
+from auth.password_encryptor import PasswordEncryptor
+from db.db import async_session
+from db.dto.users import CreateUserDto, UserDto
+from db.repositories.users.user_repository import UserRepository
+from dependencies import get_user_from_token
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBearer
-from schemas.user import UserResponse, UserPayload, CreateUserPayload
-from db.repositories.users.user_repository import UserRepository
-from db.dto.users import CreateUserDto, UserDto
-from db.db import async_session
-from dependencies import get_user_from_token
-from auth.password_encryptor import PasswordEncryptor
+from schemas.user import CreateUserPayload, UserPayload, UserResponse
 
-
-router = APIRouter(
-    dependencies=[Depends(HTTPBearer())]
-)
+router = APIRouter(dependencies=[Depends(HTTPBearer())])
 
 
 @router.get("/users/", tags=["users"], response_model=list[UserResponse])
@@ -19,10 +16,7 @@ async def read_users():
         users: list[UserDto] = await UserRepository.get_users(session)
     return [
         UserResponse(
-            login=user.login,
-            name=user.name,
-            email=user.email,
-            id=user.id
+            login=user.login, name=user.name, email=user.email, id=user.id
         )
         for user in users
     ]
@@ -39,14 +33,11 @@ async def create_user(create_user_payload: CreateUserPayload):
                 email=create_user_payload.email,
                 password=PasswordEncryptor.encrypt(
                     create_user_payload.password
-                )
-            )
+                ),
+            ),
         )
     return UserResponse(
-        login=user.login,
-        name=user.name,
-        email=user.email,
-        id=user.id
+        login=user.login, name=user.name, email=user.email, id=user.id
     )
 
 
@@ -61,7 +52,5 @@ async def read_user(username: str):
 
 
 @router.post("/ping")
-async def pong(
-    user: UserPayload = Depends(get_user_from_token)
-):
+async def pong(user: UserPayload = Depends(get_user_from_token)):
     return {"ping": f"pong, {user.login}!"}

@@ -1,14 +1,13 @@
 import jwt
+from auth.password_encryptor import PasswordEncryptor
+from config import settings
+from db.db import async_session
+from db.dto.users import UserDto
+from db.repositories.exceptions import NoRowsFoundError
+from db.repositories.users.user_repository import UserRepository
 from fastapi import APIRouter, HTTPException
 from schemas.auth import TokenRequest, TokenResponse
 from schemas.user import UserPayload
-from db.repositories.users.user_repository import UserRepository
-from db.dto.users import UserDto
-from db.db import async_session
-from auth.password_encryptor import PasswordEncryptor
-from db.repositories.exceptions import NoRowsFoundError
-from config import settings
-
 
 router = APIRouter()
 
@@ -21,14 +20,17 @@ async def auth_user(
     try:
         async with async_session() as session:
             user: UserDto = await UserRepository.get_user_by_login(
-                session,
-                login=data.login
+                session, login=data.login
             )
     except NoRowsFoundError as e:
-        raise HTTPException(status_code=401, detail="User with such login not found!") from e
+        raise HTTPException(
+            status_code=401, detail="User with such login not found!"
+        ) from e
     # Checking password
     if not PasswordEncryptor.check(data.password, user.password):
-        raise HTTPException(status_code=401, detail="Passwords does not match!")
+        raise HTTPException(
+            status_code=401, detail="Passwords does not match!"
+        )
     # Generating token and response
     token = jwt.encode(
         UserPayload(
@@ -37,10 +39,6 @@ async def auth_user(
             name=user.name,
             id=user.id,
         ).dict(),
-        settings.auth_secret
+        settings.auth_secret,
     )
-    return TokenResponse(
-        token=token,
-        login=user.login,
-        user_id=user.id
-    )
+    return TokenResponse(token=token, login=user.login, user_id=user.id)
