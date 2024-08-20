@@ -1,4 +1,4 @@
-from db.db import Base
+from db.db_build import Base
 from sqlalchemy import Column, Integer, String
 
 #  id  |      email      | pass  |      name      |  login

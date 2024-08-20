@@ -11,7 +11,7 @@ ENV PYTHONUNBUFFERED 1
 # copy requirements file
 COPY /requirements.txt /usr/src/requirements.txt
 
-# install dependencies poprav' blyat
+# install dependencies
 RUN set -eux \
     && pip install -r /usr/src/requirements.txt \
     && rm -rf /root/.cache/pip

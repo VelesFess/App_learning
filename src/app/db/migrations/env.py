@@ -11,7 +11,7 @@ from alembic import context
 
 sys.path.append(str(Path(__file__).parent.parent.parent.absolute()))
 
-from db.db import Base
+from app.db.db_build import Base
 from config import settings
 
 # Здесь и далее следует импортировать все модели для того, чтобы alembic их отслеживал

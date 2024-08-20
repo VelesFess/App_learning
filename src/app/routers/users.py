@@ -1,5 +1,5 @@
 from auth.password_encryptor import PasswordEncryptor
-from db.db import async_session
+from db.db_build import async_session
 from db.dto.users import CreateUserDto, UserDto
 from db.repositories.users.user_repository import UserRepository
 from dependencies import get_user_from_token
