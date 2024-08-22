@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from routers.auth import router as auth_router
 from routers.router1 import router as router1
 from routers.users import router as router_users
-
+from routers.events import router as router_events
 description = """
 Calendar API helps you with managing your shedule. 🚀
 
@@ -38,7 +38,7 @@ app = FastAPI(
 app.include_router(router1, tags=["Items"])
 app.include_router(router_users)
 app.include_router(auth_router)
-
+app.include_router(router_events)
 
 # события ()
 # добавитьь функцию списка событий по пользователю /events/ @get       user_id из токена # noqa: E501

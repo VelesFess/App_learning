@@ -1,7 +1,5 @@
-from datetime import date
-
 from db.db_build import Base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime
 
 
 class Event(Base):
@@ -10,6 +8,6 @@ class Event(Base):
     id = Column(Integer, nullable=False, primary_key=True, autoincrement=True)
     login = Column(String, nullable=False, unique=True, index=True)
     username = Column(String, nullable=False, unique=True, index=True)
-    date = Column(date.strftime("%Y-%m-%d"), nullable=False)
+    date = Column(DateTime, nullable=False)
     eventname = Column(String(15), nullable=False)
     comment = Column(String, nullable=False)
