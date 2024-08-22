@@ -20,7 +20,7 @@ class UserRepository:
 
     @classmethod
     def dto_to_response_model(cls, dto_user: UserDto) -> UserResponse:
-        return UserDto(
+        return UserResponse(
             login=dto_user.login,
             name=dto_user.name,
             email=dto_user.email,

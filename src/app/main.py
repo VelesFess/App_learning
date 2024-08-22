@@ -20,11 +20,11 @@ You will be able to:
 """
 
 
-# @asynccontextmanager
-# async def DB(app: FastAPI):
-#     async with engine.begin() as conn:
-#         await conn.run_sync(Base.metadata)
-#     await engine.dispose()
+@asynccontextmanager
+async def DB(app: FastAPI):
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata)
+    await engine.dispose()
 
 
 app = FastAPI(
@@ -32,7 +32,7 @@ app = FastAPI(
     description=description,
     summary="Calendar for managing your shedule",
     version="0.0.1",
-    # lifespan=DB,
+    lifespan=DB,
 )
 
 app.include_router(router1, tags=["Items"])
