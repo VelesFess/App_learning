@@ -1,6 +1,7 @@
 from db.dto.users import CreateUserDto, UserDto
 from db.models.users import User
 from db.repositories.exceptions import NoRowsFoundError
+from schemas.user import UserResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.elements import BooleanClauseList
@@ -15,6 +16,15 @@ class UserRepository:
             email=db_user.email,
             password=db_user.password,
             id=db_user.id,
+        )
+
+    @classmethod
+    def dto_to_response_model(cls, dto_user: UserDto) -> UserResponse:
+        return UserDto(
+            login=dto_user.login,
+            name=dto_user.name,
+            email=dto_user.email,
+            id=dto_user.id,
         )
 
     @classmethod

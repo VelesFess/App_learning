@@ -20,12 +20,11 @@ You will be able to:
 """
 
 
-@asynccontextmanager
-async def DB(app: FastAPI):
-    yield print("Hi")
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    await engine.dispose()
+# @asynccontextmanager
+# async def DB(app: FastAPI):
+#     async with engine.begin() as conn:
+#         await conn.run_sync(Base.metadata)
+#     await engine.dispose()
 
 
 app = FastAPI(
@@ -33,9 +32,20 @@ app = FastAPI(
     description=description,
     summary="Calendar for managing your shedule",
     version="0.0.1",
-    lifespan=DB,
+    # lifespan=DB,
 )
 
 app.include_router(router1, tags=["Items"])
 app.include_router(router_users)
 app.include_router(auth_router)
+
+
+# события ()
+# добавитьь функцию списка событий по пользователю /events/ @get       user_id из токена # noqa: E501
+# добавления события /events/   @post
+# удаления события /events/{id_event} @ delete
+# получения события /events/{id_event} @get
+# получения события на дату /events/?date={event_date} @get
+#  дата пользователь(форм кей ) id (праймари) название(ограничить по длине ) коментарий # noqa: E501
+
+# event_date format = YYYY-mm-dd

@@ -46,13 +46,17 @@ async def pong(user: UserPayload = Depends(get_user_from_token)):
     return {"ping": f"pong, {user.login}!"}
 
 
-@router.get("/users/me", tags=["users"])
+@router.get("/users/me", tags=["users"], response_model=UserResponse)
 async def get_me_as_user(user: UserPayload = Depends(get_user_from_token)):
-    return UserRepository.get_user_by_login(async_session, UserPayload.login)
+    pre_response = UserRepository.get_user_by_login(
+        async_session, UserPayload.login
+    )
+    return UserRepository.dto_to_response_model(pre_response)
 
 
-@router.get("/users/{username}", tags=["users"])
+@router.get("/users/{username}", tags=["users"], response_model=UserResponse)
 async def get_other_user(
     username: str, user: UserPayload = Depends(get_user_from_token)
 ):
-    return UserRepository.get_user_by_username(async_session, username)
+    pre_response = UserRepository.get_user_by_username(async_session, username)
+    return UserRepository.dto_to_response_model(pre_response)
