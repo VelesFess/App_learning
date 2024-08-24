@@ -4,7 +4,7 @@ from db.repositories.events.event_repository import EventRepository
 from dependencies import get_user_from_token
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBearer
-from schemas.event import CreateEventPayload, EventResponse
+from schemas.event import CreateEventPayload, EventResponse, EventPayload
 from schemas.user import UserPayload
 from db.models.event_table import Event
 from sqlalchemy.sql.elements import BooleanClauseList
@@ -56,10 +56,16 @@ async def create_event(create_event_payload: CreateEventPayload, user: UserPaylo
 
 
 @router.get("/events/{id_event}", tags=["events"], response_model=EventResponse)
-async def get_event_by_id(id:int, date:str, user: UserPayload = Depends(get_user_from_token)):
-    if date:
-        pass
+async def get_event_by_id(id:int, user: UserPayload = Depends(get_user_from_token)):
     pre_response = EventRepository.get_event(
         async_session, id, UserPayload.name
     )
     return EventRepository.dto_to_response_model(pre_response)
+
+
+@router.delete("/events/{id_event}", tags=["events"], response_model=EventResponse)
+async def delete_event_by_id(id:int, event:EventPayload, user: UserPayload = Depends(get_user_from_token)):
+    pre_response = EventRepository.delete_event(
+        async_session, event
+    )
+    return  {f"message": "Event {event.name} deleted successfully"}

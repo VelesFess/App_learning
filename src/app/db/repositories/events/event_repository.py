@@ -80,3 +80,19 @@ class EventRepository:
         await db.commit()
         await db.refresh(db_event)
         return cls.db_model_to_dto(db_event)
+    
+    @classmethod
+    async def delete_event(
+        cls, db: AsyncSession, event: EventDto
+    ):
+        query = select(Event)
+        query = query.where(id == event.id)
+        if not query:
+            raise NoRowsFoundError(f"Event for  with {id=} not found")
+        db.delete(query)
+        await db.commit()
+        await db.refresh(Event)
+        # return cls.db_model_to_dto(db_event)
+        pass
+    
+  
