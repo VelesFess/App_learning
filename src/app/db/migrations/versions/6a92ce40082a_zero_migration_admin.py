@@ -1,7 +1,7 @@
 """Zero migration admin
 
 Revision ID: 6a92ce40082a
-Revises: 6030674d69ab
+Revises: 
 Create Date: 2024-08-17 16:47:03.344043
 
 """
