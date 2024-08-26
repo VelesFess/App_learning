@@ -31,7 +31,7 @@ app = FastAPI(
     title="Calendar",
     description=description,
     summary="Calendar for managing your shedule",
-    version="0.0.1",
+    version="0.0.2",
     lifespan=DB,
 )
 
@@ -40,12 +40,7 @@ app.include_router(router_users)
 app.include_router(auth_router)
 app.include_router(router_events)
 
-# события ()
-# добавитьь функцию списка событий по пользователю /events/ @get       user_id из токена # noqa: E501
-# добавления события /events/   @post
-# удаления события /events/{id_event} @ delete
-# получения события /events/{id_event} @get
-# получения события на дату /events/?date={event_date} @get
-#  дата пользователь(форм кей ) id (праймари) название(ограничить по длине ) коментарий # noqa: E501
+# Лучше убрать это на уровень репозитория. Создай там отдельный метод, куда перенесешь эту логику формирования фильтров.
 
-# event_date format = YYYY-mm-dd
+# Все-таки именно репозиторий отвечает за общение сервиса с БД и логичнее там формировать представление фильтров
+

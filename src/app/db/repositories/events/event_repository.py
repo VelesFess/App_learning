@@ -19,15 +19,6 @@ class EventRepository:
             id = db_event.id,
         )
 
-    @classmethod
-    def dto_to_response_model(cls, dto_event: EventDto) -> EventResponse:
-        return EventResponse(
-            login=dto_event.login,
-            eventname=dto_event.username,
-            id=dto_event.id,
-            commment=dto_event.comment , 
-            date=dto_event.date,
-        )
 
     @classmethod
     async def get_event(cls, db: AsyncSession, event_id: int, username: str) -> EventDto:

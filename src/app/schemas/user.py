@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-
+from db.dto.users import UserDto
 
 class CreateUserPayload(BaseModel):
     login: str
@@ -20,3 +20,12 @@ class UserResponse(BaseModel):
     name: str
     email: EmailStr
     id: int
+
+    @classmethod
+    def dto_to_response_model(cls, dto_user: UserDto):
+        return UserResponse(
+            login=dto_user.login,
+            name=dto_user.name,
+            email=dto_user.email,
+            id=dto_user.id,
+        )

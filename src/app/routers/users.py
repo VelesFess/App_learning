@@ -22,7 +22,7 @@ async def read_users():
     ]
 
 
-@router.post("/users/", tags=["users"], response_model=UserResponse)
+@router.post("/users/", tags=["users"], response_model=UserResponse, status_code=201)
 async def create_user(create_user_payload: CreateUserPayload):
     async with async_session() as session:
         user: UserDto = await UserRepository.create_user(
@@ -51,7 +51,7 @@ async def get_me_as_user(user: UserPayload = Depends(get_user_from_token)):
     pre_response = UserRepository.get_user_by_login(
         async_session, UserPayload.login
     )
-    return UserRepository.dto_to_response_model(pre_response)
+    return UserResponse.dto_to_response_model(pre_response)
 
 
 @router.get("/users/{username}", tags=["users"], response_model=UserResponse)
@@ -59,4 +59,4 @@ async def get_other_user(
     username: str, user: UserPayload = Depends(get_user_from_token)
 ):
     pre_response = UserRepository.get_user_by_username(async_session, username)
-    return UserRepository.dto_to_response_model(pre_response)
+    return UserResponse.dto_to_response_model(pre_response)

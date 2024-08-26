@@ -4,35 +4,28 @@ from db.repositories.events.event_repository import EventRepository
 from dependencies import get_user_from_token
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBearer
-from schemas.event import CreateEventPayload, EventResponse, EventPayload
+from schemas.event import CreateEventPayload, EventResponse, EventPayload, DeletedEventResponce
 from schemas.user import UserPayload
 from db.models.event_table import Event
 from sqlalchemy.sql.elements import BooleanClauseList
 
 router = APIRouter(dependencies=[Depends(HTTPBearer())])
 
-# события ()
-# добавитьь функцию списка событий по пользователю /events/ @get   +    user_id из токена # noqa: E501
-# добавления события /events/   @post +
-# удаления события /events/{id_event} @ delete
-# получения события /events/{id_event} @get +
-# получения события на дату /events/?date={event_date} @get
-#  дата пользователь(форм кей ) id (праймари) название(ограничить по длине ) коментарий # noqa: E501
 
 @router.get("/events/", tags=["events"], response_model=list[EventResponse])
-async def read_events(date:str, user: UserPayload = Depends(get_user_from_token)):
-    filters_temp:BooleanClauseList = [user.name == Event.username]
-    if date:
-        filters_temp=filters_temp.append(date == Event.date)
+async def read_events(event_date:str, user: UserPayload = Depends(get_user_from_token)):
+    filters_temp : BooleanClauseList = [user.name == Event.username]
+    if event_date:
+        filters_temp=filters_temp._append_inplace(event_date == Event.date)
     async with async_session() as session:
         events: list[EventDto] = await EventRepository.get_events(session, filters = filters_temp)
     return [
-        EventRepository.dto_to_response_model(event)
+        EventResponse.dto_to_response_model(event)
         for event in events
     ]
 
 
-@router.post("/events/", tags=["events"], response_model=EventResponse)
+@router.post("/events/", tags=["events"], response_model=EventResponse,status_code=201)
 async def create_event(create_event_payload: CreateEventPayload, user: UserPayload = Depends(get_user_from_token)):
     async with async_session() as session:
         event: EventDto = await EventRepository.create_event(
@@ -56,16 +49,16 @@ async def create_event(create_event_payload: CreateEventPayload, user: UserPaylo
 
 
 @router.get("/events/{id_event}", tags=["events"], response_model=EventResponse)
-async def get_event_by_id(id:int, user: UserPayload = Depends(get_user_from_token)):
+async def get_event_by_id( event_id: int ,user: UserPayload = Depends(get_user_from_token)):
     pre_response = EventRepository.get_event(
-        async_session, id, UserPayload.name
+        async_session, event_id, UserPayload.name
     )
-    return EventRepository.dto_to_response_model(pre_response)
+    return EventResponse.dto_to_response_model(pre_response)
 
 
-@router.delete("/events/{id_event}", tags=["events"], response_model=EventResponse)
-async def delete_event_by_id(id:int, event:EventPayload, user: UserPayload = Depends(get_user_from_token)):
+@router.delete("/events/{id_event}", tags=["events"], response_model=DeletedEventResponce)
+async def delete_event_by_id(event:EventPayload, user: UserPayload = Depends(get_user_from_token)):
     pre_response = EventRepository.delete_event(
         async_session, event
     )
-    return  {f"message": "Event {event.name} deleted successfully"}
+    return  DeletedEventResponce(message=f"Event deleted successfully")

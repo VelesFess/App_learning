@@ -19,15 +19,6 @@ class UserRepository:
         )
 
     @classmethod
-    def dto_to_response_model(cls, dto_user: UserDto) -> UserResponse:
-        return UserResponse(
-            login=dto_user.login,
-            name=dto_user.name,
-            email=dto_user.email,
-            id=dto_user.id,
-        )
-
-    @classmethod
     async def get_user(cls, db: AsyncSession, user_id: int) -> UserDto:
         user_list = await cls.get_users(
             db, filters=User.id == user_id, limit=1
