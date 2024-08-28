@@ -1,6 +1,5 @@
 from db.db_build import async_session
 from db.dto.event_dto import CreateEventDto, EventDto
-from db.models.event_table import Event
 from db.repositories.events.event_repository import EventRepository
 from dependencies import get_user_from_token
 from fastapi import APIRouter, Depends
@@ -11,7 +10,6 @@ from schemas.event import (
     EventResponse,
 )
 from schemas.user import UserPayload
-from sqlalchemy.sql.elements import BooleanClauseList
 
 router = APIRouter(dependencies=[Depends(HTTPBearer())])
 
@@ -63,7 +61,10 @@ async def get_event_by_id(
 
 
 @router.delete(
-    "/events/{id_event}", tags=["events"], response_model=DeletedEventResponce
+    "/events/{id_event}", 
+    tags=["events"], 
+    response_model=DeletedEventResponce,
+    status_code=201
 )
 async def delete_event_by_id(
     event_id: int, user: UserPayload = Depends(get_user_from_token)
