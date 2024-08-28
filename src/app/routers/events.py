@@ -13,8 +13,8 @@ router = APIRouter(dependencies=[Depends(HTTPBearer())])
 
 
 @router.get("/events/", tags=["events"], response_model=list[EventResponse])
-async def read_events(event_date:str, user: UserPayload = Depends(get_user_from_token)):
-    filters_temp : BooleanClauseList = [user.name == Event.username]
+async def read_events(event_date:str | None =None, user: UserPayload = Depends(get_user_from_token)):
+    filters_temp : BooleanClauseList = [user.id == Event.user_id]
     if event_date:
         filters_temp=filters_temp._append_inplace(event_date == Event.date)
     async with async_session() as session:
@@ -39,12 +39,10 @@ async def create_event(create_event_payload: CreateEventPayload, user: UserPaylo
             ),
         )
     return EventResponse(
-        login=event.login,
-        username=event.username,
         eventname=event.eventname,
         comment=event.comment,
         date=event.date,
-        id=event.id
+        id_event=event.id_event
     )
 
 
@@ -57,8 +55,8 @@ async def get_event_by_id( event_id: int ,user: UserPayload = Depends(get_user_f
 
 
 @router.delete("/events/{id_event}", tags=["events"], response_model=DeletedEventResponce)
-async def delete_event_by_id(event:EventPayload, user: UserPayload = Depends(get_user_from_token)):
+async def delete_event_by_id(event_id: int, user: UserPayload = Depends(get_user_from_token)):
     pre_response = EventRepository.delete_event(
-        async_session, event
+        async_session, event_id
     )
-    return  DeletedEventResponce(message=f"Event deleted successfully")
+    return  DeletedEventResponce(message="Event deleted successfully")

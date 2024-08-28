@@ -10,7 +10,7 @@ Shedule will be represented as Postgress DataBase.
 alembic upgrade head
 ```
 
-## Создвание новой миграции
+## Создание новой миграции
 ```
 alembic revision --autogenerate -m "COMMENT"
 ```
@@ -25,5 +25,5 @@ alembic revision --autogenerate -m "COMMENT"
  получения события на дату /events/?date={event_date} @get
  дата пользователь(форм кей ) id (праймари) название(ограничить по длине ) коментарий # noqa: E501
 
-# event_date format = YYYY-mm-dd
+ event_date format = YYYY-mm-dd
 ````

@@ -1,7 +1,6 @@
 from db.dto.event_dto import CreateEventDto, EventDto
 from db.models.event_table import Event
 from db.repositories.exceptions import NoRowsFoundError
-from schemas.event import EventResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.elements import BooleanClauseList
@@ -11,34 +10,33 @@ class EventRepository:
     @classmethod
     def db_model_to_dto(cls, db_event: Event) -> EventDto:
         return EventDto(
-            login=db_event.login,
-            username = db_event.username,
-            eventname = db_event.username,
+            user_id = db_event.user_id,
+            eventname = db_event.eventname,
             comment=db_event.comment,
             date=db_event.date,
-            id = db_event.id,
+            id_event = db_event.id_event,
         )
 
 
     @classmethod
-    async def get_event(cls, db: AsyncSession, event_id: int, username: str) -> EventDto:
+    async def get_event(cls, db: AsyncSession, event_id: int, user_id: int) -> EventDto:
         event_list = await cls.get_events(
-            db, filters = [Event.id == event_id, Event.username == username], limit=1
+            db, filters = [Event.id_event == event_id, Event.user_id == user_id], limit=1
         )
         if len(event_list) == 0:
-            raise NoRowsFoundError(f"Event for {username} with {event_id=} not found")
+            raise NoRowsFoundError(f"Event for user {user_id=} with {event_id=} not found")
         return event_list[0]
 
  
     @classmethod
     async def get_event_by_date(
-        cls, db: AsyncSession, date: str, username:str
+        cls, db: AsyncSession, date: str, user_id: int
     ) -> EventDto:
         event_list = await cls.get_events(
-            db, filters= [Event.date == date, Event.username == username], limit=1
+            db, filters= [Event.date == date, Event.user_id == user_id], limit=1
         )
         if len(event_list) == 0:
-            raise NoRowsFoundError(f"Event for {username} with {date=} not found")
+            raise NoRowsFoundError(f"Event for user {user_id=} with {date=} not found")
         return event_list[0]
 
     @classmethod
@@ -61,8 +59,7 @@ class EventRepository:
         cls, db: AsyncSession, event: CreateEventDto
     ) -> EventDto:
         db_event = Event(
-            login=event.login,
-            username=event.username,
+            user_id = event.user_id,
             date = event.date,
             eventname = event.eventname,
             comment = event.date,
@@ -74,16 +71,13 @@ class EventRepository:
     
     @classmethod
     async def delete_event(
-        cls, db: AsyncSession, event: EventDto
+        cls, db: AsyncSession, event_id: int
     ):
         query = select(Event)
-        query = query.where(id == event.id)
+        query = query.where(id == event_id)
         if not query:
             raise NoRowsFoundError(f"Event for  with {id=} not found")
         db.delete(query)
         await db.commit()
-        await db.refresh(Event)
-        # return cls.db_model_to_dto(db_event)
-        pass
     
   

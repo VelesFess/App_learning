@@ -1,7 +1,6 @@
 from db.dto.users import CreateUserDto, UserDto
 from db.models.users import User
 from db.repositories.exceptions import NoRowsFoundError
-from schemas.user import UserResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.elements import BooleanClauseList

@@ -13,8 +13,8 @@ class CreateEventPayload(BaseModel):
 
 
 class EventPayload(BaseModel):
-    login: str
-    id: int
+    user_id: int
+    id_event: int
     date: str
     eventname: str = Field(..., max_length=15)
     commment: str
@@ -24,13 +24,13 @@ class EventResponse(BaseModel):
     date: str
     eventname: str = Field(..., max_length=15)
     commment: str
-    id: int
+    id_event: int
 
 
     @classmethod
     def dto_to_response_model(cls, dto_event: EventDto):
         return EventResponse(
-            id=dto_event.id,
+            id_event=dto_event.id_event,
             eventname=dto_event.eventname,
             commment=dto_event.comment , 
             date=dto_event.date,

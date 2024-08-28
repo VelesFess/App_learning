@@ -13,5 +13,5 @@ class CreateEventDto(BaseEventDto):
 
 
 class EventDto(BaseEventDto):
-    id: int
+    id_event: int
 
