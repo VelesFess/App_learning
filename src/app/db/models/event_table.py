@@ -14,7 +14,3 @@ class Event(Base):
     comment = Column(String, nullable=False, required=False)
     user_id = mapped_column(ForeignKey("user_list.id"))
 
-    @validates('date')
-    def validate_name(self, key, value):
-        assert value != ''
-        return value
