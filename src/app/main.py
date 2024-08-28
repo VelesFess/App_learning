@@ -3,9 +3,10 @@ from contextlib import asynccontextmanager
 from db.db_build import Base, engine
 from fastapi import FastAPI
 from routers.auth import router as auth_router
+from routers.events import router as router_events
 from routers.router1 import router as router1
 from routers.users import router as router_users
-from routers.events import router as router_events
+
 description = """
 Calendar API helps you with managing your shedule. 🚀
 
@@ -39,4 +40,3 @@ app.include_router(router1, tags=["Items"])
 app.include_router(router_users)
 app.include_router(auth_router)
 app.include_router(router_events)
-

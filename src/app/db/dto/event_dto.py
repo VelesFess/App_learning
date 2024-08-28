@@ -2,11 +2,11 @@ from pydantic import BaseModel, EmailStr, Field
 
 
 class BaseEventDto(BaseModel):
-    login: str
-    username: str
+    user_id : int
     eventname: str = Field(..., max_length=15)
-    comment : str
+    comment: str
     date: str
+
 
 class CreateEventDto(BaseEventDto):
     pass
@@ -14,4 +14,3 @@ class CreateEventDto(BaseEventDto):
 
 class EventDto(BaseEventDto):
     id_event: int
-
