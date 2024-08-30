@@ -22,7 +22,9 @@ async def read_users():
     ]
 
 
-@router.post("/users/", tags=["users"], response_model=UserResponse, status_code=201)
+@router.post(
+    "/users/", tags=["users"], response_model=UserResponse, status_code=201
+)
 async def create_user(create_user_payload: CreateUserPayload):
     async with async_session() as session:
         user: UserDto = await UserRepository.create_user(

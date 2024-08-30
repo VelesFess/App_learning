@@ -1,4 +1,4 @@
-from contextlib import asynccontextmanager
+# from contextlib import asynccontextmanager
 
 from db.db_build import Base, engine
 from fastapi import FastAPI
@@ -21,7 +21,7 @@ You will be able to:
 """
 
 
-@asynccontextmanager
+# @asynccontextmanager
 async def DB(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata)
@@ -32,8 +32,8 @@ app = FastAPI(
     title="Calendar",
     description=description,
     summary="Calendar for managing your shedule",
-    version="0.0.2",
-    lifespan=DB,
+    version="0.0.3",
+    # lifespan=DB,
 )
 
 app.include_router(router1, tags=["Items"])
