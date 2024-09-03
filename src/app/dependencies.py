@@ -17,5 +17,5 @@ async def get_user_from_token(request: Request) -> UserPayload:
             **jwt.decode(token_data, settings.auth_secret, algorithms="HS256")
         )
     except jwt.exceptions.DecodeError:
-        raise HTTPException(status_code=400, detail="token error")
+        raise HTTPException(status_code=400, detail="Token error")
     return token_return
