@@ -21,7 +21,7 @@ async def read_events(
     event_date: str | None = None,
     user: UserPayload = Depends(get_user_from_token),
 ):
-    await EventRepository.read_events(user, event_date)
+    return await EventRepository.read_events(user, event_date)
 
 
 @router.post(

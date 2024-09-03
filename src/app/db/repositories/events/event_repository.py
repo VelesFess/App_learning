@@ -70,7 +70,7 @@ class EventRepository:
     ) -> EventDto:
         query = select(Event)
         if filters:
-            query = query.where(filters)
+            query = query.where(*filters)
         query = query.offset(skip).limit(limit)
         query_result = await db.execute(query)
         return [cls.db_model_to_dto(event) for event, in query_result.all()]
