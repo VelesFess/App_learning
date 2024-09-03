@@ -101,6 +101,7 @@ class EventRepository:
 
     @classmethod
     async def read_events(
+        cls,
         user: UserPayload,
         event_date: str | None = None,
         eventname: str | None = None,
