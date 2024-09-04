@@ -1,9 +1,10 @@
 from datetime import datetime
 
 import jwt
-from config import settings
 from fastapi import HTTPException, Request
 from fastapi.security import HTTPBearer
+
+from config import settings
 from schemas.user import UserPayload
 
 auth_scheme = HTTPBearer()

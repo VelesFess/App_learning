@@ -1,6 +1,7 @@
-from db.db_build import Base
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import mapped_column
+
+from db.db_build import Base
 
 
 class Event(Base):

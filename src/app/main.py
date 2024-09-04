@@ -1,7 +1,8 @@
 # from contextlib import asynccontextmanager
 
-from db.db_build import Base, engine
 from fastapi import FastAPI
+
+from db.db_build import Base, engine
 from routers.auth import router as auth_router
 from routers.events import router as router_events
 from routers.router1 import router as router1

@@ -11,3 +11,9 @@ pydantic-settings
 pytest
 pyjwt
 py-bcrypt
+
+# tests
+pytest
+pytest-asyncio
+pytest-cov
+aiosqlite

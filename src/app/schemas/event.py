@@ -1,5 +1,6 @@
-from db.dto.event_dto import EventDto
 from pydantic import BaseModel, Field
+
+from db.dto.event_dto import EventDto
 
 
 class CreateEventPayload(BaseModel):

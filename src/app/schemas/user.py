@@ -1,5 +1,7 @@
 from pydantic import BaseModel, EmailStr
+
 from db.dto.users import UserDto
+
 
 class CreateUserPayload(BaseModel):
     login: str
