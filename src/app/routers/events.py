@@ -1,10 +1,10 @@
-from datetime import datetime
+from typing import Annotated
 
 from db.db_build import async_session
 from db.dto.event_dto import CreateEventDto, EventDto
 from db.repositories.events.event_repository import EventRepository
-from dependencies import get_user_from_token
-from fastapi import APIRouter, Depends, HTTPException
+from dependencies import date_valid, get_user_from_token
+from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBearer
 from schemas.event import (
     CreateEventPayload,
@@ -18,10 +18,13 @@ router = APIRouter(dependencies=[Depends(HTTPBearer())])
 
 @router.get("/events/", tags=["events"], response_model=list[EventResponse])
 async def read_events(
-    event_date: str | None = None,
+    event_date: Annotated[str | None, Depends(date_valid)] = None,
     user: UserPayload = Depends(get_user_from_token),
 ):
-    return await EventRepository.read_events(user, event_date)
+    events: list[EventDto] = await EventRepository.read_events(
+        user, event_date
+    )
+    return [EventResponse(event) for event in events]
 
 
 @router.post(
@@ -31,22 +34,14 @@ async def create_event(
     create_event_payload: CreateEventPayload,
     user: UserPayload = Depends(get_user_from_token),
 ):
-    try:
-        datetime.strptime(create_event_payload.date, "%Y-%m-%d")
-    except Exception:
-        raise HTTPException(
-            status_code=415, detail='Wrong date format "YYYY-MM-DD " expected'
-        )
-
     async with async_session() as session:
         event: EventDto = await EventRepository.create_event(
             session,
             CreateEventDto(
-                login=create_event_payload.login,
-                username=create_event_payload.username,
+                user_id=user.id,
                 eventname=create_event_payload.eventname,
                 comment=create_event_payload.comment,
-                date=create_event_payload.date,
+                date=date_valid(create_event_payload.date),
             ),
         )
 
@@ -64,10 +59,15 @@ async def create_event(
 async def get_event_by_id(
     event_id: int, user: UserPayload = Depends(get_user_from_token)
 ):
-    pre_response = EventRepository.get_event(
+    pre_response: EventDto = EventRepository.get_event(
         async_session, event_id, UserPayload.name
     )
-    return EventResponse.dto_to_response_model(pre_response)
+    return EventResponse(
+        id_event=pre_response.id_event,
+        eventname=pre_response.eventname,
+        commment=pre_response.comment,
+        date=pre_response.date,
+    )
 
 
 @router.delete(

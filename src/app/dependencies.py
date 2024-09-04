@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import jwt
 from config import settings
 from fastapi import HTTPException, Request
@@ -19,3 +21,12 @@ async def get_user_from_token(request: Request) -> UserPayload:
     except jwt.exceptions.DecodeError:
         raise HTTPException(status_code=400, detail="Token error")
     return token_return
+
+
+async def date_valid(date: str) -> datetime:
+    try:
+        return datetime.strptime(date, "%Y-%m-%d")
+    except ValueError:
+        raise HTTPException(
+            status_code=415, detail='Wrong date format "YYYY-MM-DD " expected'
+        )

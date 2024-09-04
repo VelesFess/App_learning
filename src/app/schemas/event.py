@@ -1,12 +1,8 @@
 from db.dto.event_dto import EventDto
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 
 
 class CreateEventPayload(BaseModel):
-    username: str
-    login: str
-    email: EmailStr
-    password: str
     date: str
     eventname: str = Field(..., max_length=15)
     comment: str

@@ -1,21 +1,13 @@
 from datetime import datetime
 
-from pydantic import BaseModel, BeforeValidator, Field, ValidationError
-from typing_extensions import Annotated
-
-
-def check_date(date: str):
-    try:
-        datetime.strptime(date, "%Y-%m-%d")
-    except Exception:
-        raise ValidationError
+from pydantic import BaseModel, Field
 
 
 class BaseEventDto(BaseModel):
     user_id: int
     eventname: str = Field(..., max_length=15)
     comment: str
-    date: Annotated[str, BeforeValidator(check_date)]
+    date: datetime
 
 
 class CreateEventDto(BaseEventDto):
