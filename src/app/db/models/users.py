@@ -1,5 +1,6 @@
-from db.db_build import Base
 from sqlalchemy import Column, Integer, String
+
+from db.db_build import Base
 
 #  id  |      email      | pass  |      name      |  login
 # -----+-----------------+-------+----------------+---------

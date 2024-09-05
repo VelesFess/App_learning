@@ -16,7 +16,7 @@ from config import settings
 
 # Здесь и далее следует импортировать все модели для того, чтобы alembic их отслеживал
 from db.models.users import *
-
+from db.models.event_table import *
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

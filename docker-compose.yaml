@@ -1,6 +1,7 @@
 version: "3.9"
 services:
   web:
+    container_name: app
     build: ./src
     command: bash -c './docker_entry_point.sh'
     environment:
