@@ -1,10 +1,9 @@
 from datetime import datetime
 
 import jwt
+from config import settings
 from fastapi import HTTPException, Request
 from fastapi.security import HTTPBearer
-
-from config import settings
 from schemas.user import UserPayload
 
 auth_scheme = HTTPBearer()
@@ -28,6 +27,4 @@ async def date_valid(date: str) -> datetime:
     try:
         return datetime.strptime(date, "%Y-%m-%d")
     except ValueError:
-        raise HTTPException(
-            status_code=415, detail='Wrong date format "YYYY-MM-DD " expected'
-        )
+        raise HTTPException(status_code=422, detail="UNPROCESSIBLE ENTITY")

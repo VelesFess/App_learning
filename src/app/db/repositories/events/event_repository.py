@@ -1,15 +1,13 @@
 from datetime import datetime
 
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql.elements import BooleanClauseList
-
 from db.db_build import async_session
 from db.dto.event_dto import CreateEventDto, EventDto
 from db.models.event_table import Event
 from db.repositories.exceptions import NoRowsFoundError
-from schemas.event import EventResponse
 from schemas.user import UserPayload
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.elements import BooleanClauseList
 
 
 class EventRepository:
@@ -24,7 +22,9 @@ class EventRepository:
         )
 
     @classmethod
-    async def get_event(cls, db: AsyncSession, event_id: int, user_id: int) -> EventDto:
+    async def get_event(
+        cls, db: AsyncSession, event_id: int, user_id: int
+    ) -> EventDto:
         event_list = await cls.get_events(
             db,
             filters=[Event.id == event_id, Event.user_id == user_id],
@@ -38,7 +38,7 @@ class EventRepository:
 
     @classmethod
     async def get_event_by_date(
-        cls, db: AsyncSession, event_date: str, user_id: int
+        cls, db: AsyncSession, event_date: datetime, user_id: int
     ) -> EventDto:
         event_list = await cls.get_events(
             db,
@@ -67,7 +67,9 @@ class EventRepository:
         return [cls.db_model_to_dto(event) for event, in query_result.all()]
 
     @classmethod
-    async def create_event(cls, db: AsyncSession, event: CreateEventDto) -> EventDto:
+    async def create_event(
+        cls, db: AsyncSession, event: CreateEventDto
+    ) -> EventDto:
         db_event = Event(
             user_id=event.user_id,
             date=event.date,
@@ -95,24 +97,22 @@ class EventRepository:
         event_date: datetime | None = None,
         eventname: str | None = None,
         comment: str | None = None,
-    ):
+    ) -> list[EventDto]:
         filters_temp: BooleanClauseList = [user.id == Event.user_id]
         if event_date:
-            filters_temp = filters_temp._append_inplace(event_date == Event.date)
+            filters_temp = filters_temp._append_inplace(
+                event_date == Event.date
+            )
         if eventname:
-            filters_temp = filters_temp._append_inplace(eventname == Event.eventname)
+            filters_temp = filters_temp._append_inplace(
+                eventname == Event.eventname
+            )
         if comment:
-            filters_temp = filters_temp._append_inplace(comment == Event.comment)
+            filters_temp = filters_temp._append_inplace(
+                comment == Event.comment
+            )
         async with async_session() as session:
             events: list[EventDto] = await EventRepository.get_events(
                 session, filters=filters_temp
             )
-        return [
-            EventResponse(
-                id_event=event.id_event,
-                eventname=event.eventname,
-                commment=event.comment,
-                date=event.date,
-            )
-            for event in events
-        ]
+        return [events]
