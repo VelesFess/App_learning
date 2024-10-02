@@ -13,7 +13,7 @@ pyjwt
 py-bcrypt
 
 # tests
-pytest
+pytest==8.2.1
 pytest-asyncio
 pytest-cov
 aiosqlite

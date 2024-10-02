@@ -5,6 +5,10 @@ from main import app
 client = TestClient(app)
 
 
+def test_alan():
+    assert False
+
+
 async def test_user_list(client, admin_token):
     resp = await client.get("/users/")
     assert resp.status_code == 403
