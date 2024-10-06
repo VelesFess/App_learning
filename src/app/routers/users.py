@@ -5,7 +5,12 @@ from db.repositories.users.user_repository import UserRepository
 from dependencies import get_user_from_token
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBearer
-from schemas.user import CreateUserPayload, UserPayload, UserResponse
+from schemas.user import (
+    CreateUserPayload,
+    DeletedUserResponce,
+    UserPayload,
+    UserResponse,
+)
 
 router = APIRouter(dependencies=[Depends(HTTPBearer())])
 
@@ -63,9 +68,10 @@ async def get_me_as_user(
     user: UserPayload = Depends(get_user_from_token),
     async_session=Depends(get_sessionmaker),
 ):
-    pre_response = UserRepository.get_user_by_login(
-        async_session, UserPayload.login
-    )
+    async with async_session() as session:
+        pre_response = UserRepository.get_user_by_login(
+            session, UserPayload.login
+        )
     return UserResponse.dto_to_response_model(pre_response)
 
 
@@ -75,5 +81,23 @@ async def get_other_user(
     user: UserPayload = Depends(get_user_from_token),
     async_session=Depends(get_sessionmaker),
 ):
-    pre_response = UserRepository.get_user_by_username(async_session, username)
+    async with async_session() as session:
+        pre_response = await UserRepository.get_user_by_username(
+            session, username
+        )
     return UserResponse.dto_to_response_model(pre_response)
+
+
+@router.delete(
+    "/users/{username}",
+    tags=["users"],
+    response_model=DeletedUserResponce,
+    status_code=201,
+)
+async def delete_user_by_username(
+    user: UserPayload = Depends(get_user_from_token),
+    async_session=Depends(get_sessionmaker),
+):
+    async with async_session() as session:
+        await UserRepository.delete_user(session, user.name)
+    return DeletedUserResponce(message="User deleted successfully")

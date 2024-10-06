@@ -1,6 +1,5 @@
-from pydantic import BaseModel, EmailStr
-
 from db.dto.users import UserDto
+from pydantic import BaseModel, EmailStr
 
 
 class CreateUserPayload(BaseModel):
@@ -31,3 +30,7 @@ class UserResponse(BaseModel):
             email=dto_user.email,
             id=dto_user.id,
         )
+
+
+class DeletedUserResponce(BaseModel):
+    message: str
