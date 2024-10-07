@@ -3,7 +3,7 @@ from db.models.users import User
 from db.repositories.exceptions import NoRowsFoundError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql.elements import BooleanClauseList
+from sqlalchemy.sql.elements import BinaryExpression, BooleanClauseList
 
 
 class UserRepository:
@@ -40,7 +40,7 @@ class UserRepository:
         cls, db: AsyncSession, username: str
     ) -> UserDto:
         user_list = await cls.get_users(
-            db, filters=User.name == username, limit=1
+            db, filters=User.name == username, limit=1, skip=0
         )
         if len(user_list) == 0:
             raise NoRowsFoundError(f"User with {username=} not found")
@@ -63,10 +63,10 @@ class UserRepository:
         skip: int = 0,
         limit: int = 100,
     ) -> UserDto:
-        query = select(User)
-        if filters:
-            query = query.where(filters)
-        query = query.offset(skip).limit(limit)
+        if type(filters) == BinaryExpression:  # noqa:E721
+            query = select(User).where(filters).offset(skip).limit(limit)
+        else:
+            query = select(User).offset(skip).limit(limit)
         query_result = await db.execute(query)
         return [cls.db_model_to_dto(user) for user, in query_result.all()]
 
@@ -86,9 +86,12 @@ class UserRepository:
         return cls.db_model_to_dto(db_user)
 
     @classmethod
-    async def delete_user(cls, db: AsyncSession, username: str):
-        query = select(User).filter(User.name == username)
-        if not query:
-            raise NoRowsFoundError(f"User for  with {username=} not found")
-        db.delete(query)
+    async def delete_user(cls, db: AsyncSession, login: str):
+        query = select(User).filter(User.login == login)
+        check = await cls.get_user_by_login(db, login)
+        if not check:
+            raise NoRowsFoundError(f"User for  with {login=} not found")
+        row = await db.execute(query)
+        row = row.scalar_one()
+        await db.delete(row)
         await db.commit()

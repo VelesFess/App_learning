@@ -156,9 +156,9 @@ async def create_test_user(async_db_session):
 
 
 @pytest.fixture
-async def get_test_user_by_login(async_db_session):
-    db_user: UserDto = await UserRepository.get_user_by_login(
-        async_db_session, login="string"
+async def fix_get_test_user_by_username(async_db_session):
+    db_user: UserDto = await UserRepository.get_user_by_username(
+        async_db_session, "string"
     )
     return db_user
 
