@@ -142,35 +142,14 @@ async def admin_token(admin):
 
 
 @pytest.fixture
-async def create_test_user(async_db_session):
+async def test(async_db_session):
     db_user: UserDto = await UserRepository.create_user(
         async_db_session,
         CreateUserDto(
-            login="string_test",
-            name="string_test",
-            password=PasswordEncryptor.encrypt("string_test"),
-            email="string_test@example.com",
+            login="test",
+            name="test",
+            password=PasswordEncryptor.encrypt("test"),
+            email="test@example.com",
         ),
     )
     return db_user
-
-
-@pytest.fixture
-async def fix_get_test_user_by_username(async_db_session):
-    db_user: UserDto = await UserRepository.get_user_by_username(
-        async_db_session, "string"
-    )
-    return db_user
-
-
-@pytest.fixture
-async def user_token(user):
-    return jwt.encode(
-        UserPayload(
-            login=user.login,
-            email=user.email,
-            name=user.name,
-            id=user.id,
-        ).dict(),
-        settings.auth_secret,
-    )

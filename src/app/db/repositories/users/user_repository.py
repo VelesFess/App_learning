@@ -1,7 +1,7 @@
 from db.dto.users import CreateUserDto, UserDto
 from db.models.users import User
 from db.repositories.exceptions import NoRowsFoundError
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.elements import BinaryExpression, BooleanClauseList
 
@@ -87,11 +87,8 @@ class UserRepository:
 
     @classmethod
     async def delete_user(cls, db: AsyncSession, login: str):
-        query = select(User).filter(User.login == login)
         check = await cls.get_user_by_login(db, login)
         if not check:
             raise NoRowsFoundError(f"User for  with {login=} not found")
-        row = await db.execute(query)
-        row = row.scalar_one()
-        await db.delete(row)
+        await db.execute(delete(User).where(User.login == login))
         await db.commit()

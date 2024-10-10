@@ -23,6 +23,7 @@ router = APIRouter(dependencies=[Depends(HTTPBearer())])
     status_code=200,
 )
 async def read_users(
+    user: UserPayload = Depends(get_user_from_token),
     async_session=Depends(get_sessionmaker),
 ):
     async with async_session() as session:
@@ -43,17 +44,23 @@ async def create_user(
     async_session=Depends(get_sessionmaker),
 ):
     async with async_session() as session:
-        user: UserDto = await UserRepository.create_user(
-            session,
-            CreateUserDto(
-                login=create_user_payload.login,
-                name=create_user_payload.name,
-                email=create_user_payload.email,
-                password=PasswordEncryptor.encrypt(
-                    create_user_payload.password
+        try:
+            await UserRepository.get_user_by_login(
+                session, login=create_user_payload.login
+            )
+            raise HTTPException(status_code=400, detail="User already exist")
+        except NoRowsFoundError:
+            user: UserDto = await UserRepository.create_user(
+                session,
+                CreateUserDto(
+                    login=create_user_payload.login,
+                    name=create_user_payload.name,
+                    email=create_user_payload.email,
+                    password=PasswordEncryptor.encrypt(
+                        create_user_payload.password
+                    ),
                 ),
-            ),
-        )
+            )
     return UserResponse(
         login=user.login, name=user.name, email=user.email, id=user.id
     )
@@ -70,8 +77,8 @@ async def get_me_as_user(
     async_session=Depends(get_sessionmaker),
 ):
     async with async_session() as session:
-        pre_response = UserRepository.get_user_by_login(
-            session, UserPayload.login
+        pre_response = await UserRepository.get_user_by_login(
+            session, user.login
         )
     return UserResponse.dto_to_response_model(pre_response)
 
@@ -96,7 +103,7 @@ async def get_other_user(
     "/users/{username}",
     tags=["users"],
     response_model=DeletedUserResponce,
-    status_code=201,
+    status_code=200,
 )
 async def delete_user_by_username(
     user: UserPayload = Depends(get_user_from_token),
