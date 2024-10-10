@@ -18,11 +18,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 class DependencyOverrider:
     def __init__(
-        self, app: FastAPI, overrides: typing.Mapping[typing.Callable, typing.Callable]
+        self,
+        app: FastAPI,
+        overrides: typing.Mapping[typing.Callable, typing.Callable],
     ) -> None:
         self.overrides = overrides
         self._app = app
-        self._old_overrides = {}
+        self._old_overrides: dict = {}
 
     def __enter__(self):
         for dep, new_dep in self.overrides.items():
@@ -36,7 +38,9 @@ class DependencyOverrider:
         for dep in self.overrides.keys():
             if dep in self._old_overrides:
                 # Restore previous overrides
-                self._app.dependency_overrides[dep] = self._old_overrides.pop(dep)
+                self._app.dependency_overrides[dep] = self._old_overrides.pop(
+                    dep
+                )
             else:
                 # Just delete the entry
                 del self._app.dependency_overrides[dep]
@@ -53,7 +57,6 @@ def event_loop(request):
 @pytest.fixture(scope="function")
 async def async_db_session(event_loop):
     async with engine.connect() as conn:
-
         await conn.begin()
 
         # note this points to the sync version of the Transaction
@@ -76,7 +79,9 @@ async def async_db_session(event_loop):
         # work with AsyncSession here, commit and rollback OK
         # ...
 
-        with DependencyOverrider(app, {get_sessionmaker: lambda: SessionmakerStub()}):
+        with DependencyOverrider(
+            app, {get_sessionmaker: lambda: SessionmakerStub()}
+        ):
             yield async_session
 
         # rollback outer transaction
@@ -89,7 +94,8 @@ async def setup(async_db_session):
         (
             await async_db_session.execute(
                 text(
-                    "SELECT table_name FROM information_schema.tables WHERE table_schema='public'"
+                    "SELECT table_name FROM information_schema.tables"
+                    " WHERE table_schema='public'"
                 )
             )
         )
@@ -97,7 +103,9 @@ async def setup(async_db_session):
         .all()
     )
     for tablename in tables:
-        await async_db_session.execute(text(f"TRUNCATE TABLE {tablename} CASCADE"))
+        await async_db_session.execute(
+            text(f"TRUNCATE TABLE {tablename} CASCADE")
+        )
 
 
 @pytest.fixture
@@ -131,3 +139,17 @@ async def admin_token(admin):
         ).dict(),
         settings.auth_secret,
     )
+
+
+@pytest.fixture
+async def test(async_db_session):
+    db_user: UserDto = await UserRepository.create_user(
+        async_db_session,
+        CreateUserDto(
+            login="test",
+            name="test",
+            password=PasswordEncryptor.encrypt("test"),
+            email="test@example.com",
+        ),
+    )
+    return db_user
