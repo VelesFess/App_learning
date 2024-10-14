@@ -38,6 +38,9 @@ async def test_user_list(client: AsyncClient, admin_token: str):
     )
     assert resp.status_code == 200
     assert len(resp.json()) == 1
+    assert resp.json()[0]["login"] == "admin"
+    assert resp.json()[0]["email"] == "admin@example.com"
+    assert resp.json()[0]["name"] == "admin"
 
 
 async def test_user_create(client: AsyncClient, admin_token: str):
