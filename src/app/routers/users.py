@@ -105,10 +105,10 @@ async def get_other_user(
     response_model=DeletedUserResponce,
     status_code=200,
 )
-async def delete_user_by_username(
+async def delete_user_by_login(
     user: UserPayload = Depends(get_user_from_token),
     async_session=Depends(get_sessionmaker),
 ):
     async with async_session() as session:
-        await UserRepository.delete_user(session, user.name)
+        await UserRepository.delete_user(session, user.login)
     return DeletedUserResponce(message="User deleted successfully")

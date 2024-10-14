@@ -3,7 +3,7 @@ from db.models.users import User
 from db.repositories.exceptions import NoRowsFoundError
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql.elements import BinaryExpression, BooleanClauseList
+from sqlalchemy.sql.elements import BooleanClauseList
 
 
 class UserRepository:
@@ -20,7 +20,7 @@ class UserRepository:
     @classmethod
     async def get_user(cls, db: AsyncSession, user_id: int) -> UserDto:
         user_list = await cls.get_users(
-            db, filters=User.id == user_id, limit=1
+            db, filters=[User.id == user_id], limit=1
         )
         if len(user_list) == 0:
             raise NoRowsFoundError(f"User with {user_id=} not found")
@@ -29,7 +29,7 @@ class UserRepository:
     @classmethod
     async def get_user_by_email(cls, db: AsyncSession, email: str) -> UserDto:
         user_list = await cls.get_users(
-            db, filters=User.email == email, limit=1
+            db, filters=[User.email == email], limit=1
         )
         if len(user_list) == 0:
             raise NoRowsFoundError(f"User with {email=} not found")
@@ -40,7 +40,7 @@ class UserRepository:
         cls, db: AsyncSession, username: str
     ) -> UserDto:
         user_list = await cls.get_users(
-            db, filters=User.name == username, limit=1, skip=0
+            db, filters=[User.name == username], limit=1, skip=0
         )
         if len(user_list) == 0:
             raise NoRowsFoundError(f"User with {username=} not found")
@@ -49,7 +49,7 @@ class UserRepository:
     @classmethod
     async def get_user_by_login(cls, db: AsyncSession, login: str) -> UserDto:
         user_list = await cls.get_users(
-            db, filters=User.login == login, limit=1
+            db, filters=[User.login == login], limit=1
         )
         if len(user_list) == 0:
             raise NoRowsFoundError(f"User with {login=} not found")
@@ -63,8 +63,8 @@ class UserRepository:
         skip: int = 0,
         limit: int = 100,
     ) -> UserDto:
-        if type(filters) == BinaryExpression:  # noqa:E721
-            query = select(User).where(filters).offset(skip).limit(limit)
+        if filters:  # noqa:E721
+            query = select(User).where(*filters).offset(skip).limit(limit)
         else:
             query = select(User).offset(skip).limit(limit)
         query_result = await db.execute(query)
@@ -90,5 +90,5 @@ class UserRepository:
         check = await cls.get_user_by_login(db, login)
         if not check:
             raise NoRowsFoundError(f"User for  with {login=} not found")
-        await db.execute(delete(User).where(User.login == login))
+        await db.execute(delete(User).where(*[User.login == login]))
         await db.commit()
